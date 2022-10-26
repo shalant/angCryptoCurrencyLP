@@ -62,27 +62,28 @@ export class CoinDetailComponent implements OnInit {
       .subscribe(val => {
         this.currency = val;
         this.getGraphData(this.days);
+        this.getCoinData();
       })
   }
 
-  getCoinData() {
+  getCoinData(){
     this.api.getCurrencyById(this.coinId)
-      .subscribe(res =>{
-        this.coinData = res;
-        console.log(this.coinData);
-        if(this.currency == "USD") {
-          res.market_data.current_price.inr = res.market_data.current_price.usd;
-          res.market_data.current_cap.inr = res.market_data.current_cap.usd;
-        }
-        res.market_data.current_price.inr = res.market_data.current_price.inr;
-        res.market_data.current_cap.inr = res.market_data.current_cap.inr;
-        this.coinData = res;
-      })
+    .subscribe(res=>{
+
+      console.log(this.coinData);
+      if(this.currency === "USD"){
+        res.market_data.current_price.inr = res.market_data.current_price.usd;
+        res.market_data.market_cap.inr = res.market_data.market_cap.usd;
+      }
+      res.market_data.current_price.inr = res.market_data.current_price.inr;
+      res.market_data.market_cap.inr = res.market_data.market_cap.inr;
+      this.coinData = res;
+    })
   }
 
   getGraphData(days: number) {
     this.days = days
-    this.api.getGraphicalCurrencyData(this.coinId, this.currency, 30)
+    this.api.getGraphicalCurrencyData(this.coinId, this.currency, this.days)
       .subscribe(res => {
         this.myLineChart.chart?.update();
         this.lineChartData.datasets[0].data = res.prices.map((a:any) => {
